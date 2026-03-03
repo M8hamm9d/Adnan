@@ -1,266 +1,264 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-  <meta charset="UTF-8">
-  <title>نظام صيانة الطرق - شمال الباطنة</title>
-  <style>
-    :root { --primary: #005a8d; --success: #28a745; --danger: #dc3545; }
-    body { font-family: 'Arial', sans-serif; background: #f0f4f7; margin: 0; padding: 0; }
-    .no-print { max-width: 900px; margin: 20px auto; background: white; padding: 25px; border-radius: 12px; box-shadow: 0 5px 20px rgba(0,0,0,0.1); }
-    .step { display: none; }
-    .step.active { display: block; }
-    .field-group { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px; }
-    label { font-weight: bold; display: block; margin-bottom: 5px; font-size: 14px; }
-    input, select { width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 8px; box-sizing: border-box; }
-    .btn { padding: 12px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; transition: 0.3s; }
-    .btn-next { background: var(--primary); color: white; width: 100%; margin-top: 20px; }
-    .btn-gps { background: #17a2b8; color: white; margin-top: 5px; font-size: 12px; }
-    .btn-add { background: #6c757d; color: white; margin-bottom: 15px; }
-    #attachments_preview { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 10px; }
-    .img-thumb { width: 80px; height: 80px; object-fit: cover; border: 1px solid #ddd; border-radius: 5px; }
+    <meta charset="UTF-8">
+    <title>نظام صيانة الطرق - شمال الباطنة</title>
+    <style>
+        :root { --primary: #005a8d; --success: #28a745; --danger: #dc3545; }
+        body { font-family: 'Arial', sans-serif; background: #f0f4f7; margin: 0; padding: 0; }
+        .no-print { max-width: 900px; margin: 20px auto; background: white; padding: 25px; border-radius: 12px; box-shadow: 0 5px 20px rgba(0,0,0,0.1); }
+        .step { display: none; } .step.active { display: block; }
+        .field-group { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px; }
+        label { font-weight: bold; display: block; margin-bottom: 5px; font-size: 14px; }
+        input, select { width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 8px; box-sizing: border-box; }
+        .btn { padding: 12px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; transition: 0.3s; }
+        .btn-next { background: var(--primary); color: white; width: 100%; margin-top: 20px; }
+        .btn-gps { background: #17a2b8; color: white; margin-top: 5px; font-size: 12px; }
+        .btn-add { background: #6c757d; color: white; margin-bottom: 15px; }
+        #attachments_preview { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 10px; }
+        .img-thumb { width: 80px; height: 80px; object-fit: cover; border: 1px solid #ddd; border-radius: 5px; }
+        
+        /* تنسيق صورة العملة لتتناسب مع النص */
+        .currency-img {
+            height: 1.2em;
+            vertical-align: middle;
+            display: inline-block;
+        }
 
-    /* إعدادات الطباعة الاحترافية */
-    @media print {
-      .no-print { display: none !important; }
-      #printArea { display: block !important; }
-      body { background: white; margin: 0; padding: 0; }
-      @page { size: A4; margin: 0; }
+        /* إعدادات الطباعة الاحترافية */
+        @media print {
+            .no-print { display: none !important; }
+            #printArea { display: block !important; }
+            body { background: white; margin: 0; padding: 0; }
+            @page { size: A4; margin: 0; } /* إزالة الهوامش التلقائية للمتصفح (الوقت والروابط) */
+            
+            .page-container {
+                width: 210mm;
+                min-height: 297mm;
+                padding: 15mm;
+                margin: auto;
+                box-sizing: border-box;
+                page-break-after: always; /* فصل الصفحات */
+                position: relative;
+                overflow: hidden;
+            }
+        }
 
-      .page-container {
-        width: 210mm;
-        min-height: 297mm;
-        padding: 15mm;
-        margin: auto;
-        box-sizing: border-box;
-        page-break-after: always;
-        position: relative;
-        overflow: hidden;
-      }
-    }
+        #printArea { display: none; background: white; color: black; }
+        .print-header-space { margin-top: 130px; } /* مسافة 4 أسطر تقريباً */
+        .header-title { text-align: center; font-weight: bold; font-size: 15px; margin-bottom: 25px; line-height: 1.6; }
+        
+        .info-table { width: 100%; border-collapse: collapse; margin-bottom: 20px; table-layout: fixed; }
+        .info-table td { border: 1px solid black; padding: 8px; font-size: 12px; text-align: center; }
+        .label-ar { width: 110px; font-weight: bold; background: #f2f2f2; text-align: right; direction: rtl; }
+        .label-en { width: 110px; font-weight: bold; background: #f2f2f2; text-align: left; direction: ltr; }
+        .data-val { font-weight: bold; font-size: 13px; }
 
-    #printArea { display: none; background: white; color: black; }
-    .print-header-space { margin-top: 130px; }
-    .header-title { text-align: center; font-weight: bold; font-size: 15px; margin-bottom: 25px; line-height: 1.6; }
+        .work-table { width: 100%; border-collapse: collapse; direction: ltr; margin-top: 10px; }
+        .work-table th, .work-table td { border: 1px solid black; padding: 6px; text-align: center; font-size: 11px; }
+        .work-table th { background: #f2f2f2; }
+        .total-row { font-weight: bold; background: #f9f9f9; }
 
-    .info-table { width: 100%; border-collapse: collapse; margin-bottom: 20px; table-layout: fixed; }
-    .info-table td { border: 1px solid black; padding: 8px; font-size: 12px; text-align: center; }
-    .label-ar { width: 110px; font-weight: bold; background: #f2f2f2; text-align: right; direction: rtl; }
-    .label-en { width: 110px; font-weight: bold; background: #f2f2f2; text-align: left; direction: ltr; }
-    .data-val { font-weight: bold; font-size: 13px; }
+        .sig-section { margin-top: 40px; }
+        .sig-row { display: flex; justify-content: space-between; padding: 0 40px; font-weight: bold; font-size: 13px; }
+        .sig-bottom { text-align: center; margin-top: 50px; font-weight: bold; font-size: 14px; }
 
-    .work-table { width: 100%; border-collapse: collapse; direction: ltr; margin-top: 10px; }
-    .work-table th, .work-table td { border: 1px solid black; padding: 6px; text-align: center; font-size: 11px; }
-    .work-table th { background: #f2f2f2; }
-    .total-row { font-weight: bold; background: #f9f9f9; }
-
-    .sig-section { margin-top: 40px; }
-    .sig-row { display: flex; justify-content: space-between; padding: 0 40px; font-weight: bold; font-size: 13px; }
-    .sig-bottom { text-align: center; margin-top: 50px; font-weight: bold; font-size: 14px; }
-
-    .attachment-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 20px; }
-    .attachment-grid img { width: 100%; border: 1px solid #000; max-height: 350px; object-fit: contain; }
-  </style>
+        .attachment-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 20px; }
+        .attachment-grid img { width: 100%; border: 1px solid #000; max-height: 350px; object-fit: contain; }
+    </style>
 </head>
 <body>
 
 <div class="no-print">
-  <div id="step1" class="step active">
-    <h2 style="text-align:center;">📍 المرحلة 1: الموقع والبنود</h2>
-    <div class="field-group">
-      <div><label>اسم الطريق</label><input type="text" id="m_road"></div>
-      <div>
-        <label>الإحداثيات GPS</label>
-        <input type="text" id="m_gps" placeholder="خط العرض، خط الطول">
-        <button class="btn btn-gps" onclick="getLocation()">📍 جلب الإحداثيات</button>
-      </div>
+    <div id="step1" class="step active">
+        <h2 style="text-align:center;">📍 المرحلة 1: الموقع والبنود</h2>
+        <div class="field-group">
+            <div><label>اسم الطريق</label><input type="text" id="m_road"></div>
+            <div>
+                <label>الإحداثيات GPS</label>
+                <input type="text" id="m_gps" placeholder="خط العرض، خط الطول">
+                <button class="btn btn-gps" onclick="getLocation()">📍 جلب الإحداثيات</button>
+            </div>
+        </div>
+        <div id="items_list"></div>
+        <button class="btn btn-add" onclick="addItemRow()">➕ إضافة بند</button>
+        <button class="btn btn-next" onclick="showStep(2)">التالي: البيانات والمرفقات ⬅️</button>
     </div>
-    <div id="items_list"></div>
-    <button class="btn btn-add" onclick="addItemRow()">➕ إضافة بند</button>
-    <button class="btn btn-next" onclick="showStep(2)">التالي: البيانات والمرفقات ⬅️</button>
-  </div>
 
-  <div id="step2" class="step">
-    <h2 style="text-align:center;">📝 المرحلة 2: البيانات النهائية</h2>
-    <div class="field-group">
-      <div><label>رقم أمر العمل</label><input type="text" id="wo_no"></div>
-      <div><label>تاريخ الإصدار</label><input type="date" id="wo_date"></div>
-      <div><label>المدة (بالأيام)</label><input type="number" id="wo_days" value="30"></div>
-      <div><label>المرفقات (صور)</label><input type="file" id="wo_files" multiple accept="image/*" onchange="previewImages()"></div>
+    <div id="step2" class="step">
+        <h2 style="text-align:center;">📝 المرحلة 2: البيانات النهائية</h2>
+        <div class="field-group">
+            <div><label>رقم أمر العمل</label><input type="text" id="wo_no"></div>
+            <div><label>تاريخ الإصدار</label><input type="date" id="wo_date"></div>
+            <div><label>المدة (بالأيام)</label><input type="number" id="wo_days" value="30"></div>
+            <div><label>المرفقات (صور)</label><input type="file" id="wo_files" multiple accept="image/*" onchange="previewImages()"></div>
+        </div>
+        <div id="attachments_preview"></div>
+        <button class="btn btn-next" style="background:var(--success)" onclick="generatePrint()">إصدار وطباعة PDF ✅</button>
+        <button class="btn btn-add" onclick="showStep(1)">🔙 رجوع</button>
     </div>
-    <div id="attachments_preview"></div>
-    <button class="btn btn-next" style="background:var(--success)" onclick="generatePrint()">إصدار وطباعة PDF ✅</button>
-    <button class="btn btn-add" onclick="showStep(1)">🔙 رجوع</button>
-  </div>
 </div>
 
 <div id="printArea">
-  <div class="page-container">
-    <div class="print-header-space">
-      <div class="header-title">
-        مشروع صيانـة الطرق الإسفلتيـة بمحافظـة شمال الباطنة لمدة (5) سنوات<br>
-        MAINTENANCE OF PAVED ROADS PROJECTS AT N.AL BATINAH GOV. ( FOR 5 – YEAR )
-      </div>
+    <div class="page-container">
+        <div class="print-header-space">
+            <div class="header-title">
+                مشروع صيانـة الطرق الإسفلتيـة بمحافظـة شمال الباطنة لمدة (5) سنوات<br>
+                MAINTENANCE OF PAVED ROADS PROJECTS AT N.AL BATINAH GOV. ( FOR 5 – YEAR )
+            </div>
 
-      <table class="info-table">
-        <tr>
-          <td class="label-ar">المحافظة</td>
-          <td class="data-val">شمال الباطنة</td>
-          <td class="label-en">Governorate</td>
-        </tr>
-        <tr>
-          <td class="label-ar">أمر عمل رقم</td>
-          <td class="data-val" id="p_wo_no"></td>
-          <td class="label-en">W/O Number</td>
-        </tr>
-        <tr>
-          <td class="label-ar">تاريخ الإصدار</td>
-          <td class="data-val" id="p_date"></td>
-          <td class="label-en">Date of Issue</td>
-        </tr>
-        <tr>
-          <td class="label-ar">المدة</td>
-          <td class="data-val" id="p_period"></td>
-          <td class="label-en">Period</td>
-        </tr>
-        <tr>
-          <td class="label-ar">تاريخ الانتهاء</td>
-          <td class="data-val" id="p_end"></td>
-          <td class="label-en">Expiry Date</td>
-        </tr>
-        <tr>
-          <td class="label-ar">الموقع</td>
-          <td class="data-val" id="p_loc"></td>
-          <td class="label-en">Location</td>
-        </tr>
-      </table>
+            <table class="info-table">
+                <tr><td class="label-ar">المحافظة</td><td class="data-val">شمال الباطنة</td><td class="label-en">Governorate</td></tr>
+                <tr><td class="label-ar">أمر عمل رقم</td><td class="data-val" id="p_wo_no"></td><td class="label-en">W/O Number</td></tr>
+                <tr><td class="label-ar">تاريخ الإصدار</td><td class="data-val" id="p_date"></td><td class="label-en">Date of Issue</td></tr>
+                <tr><td class="label-ar">المدة</td><td class="data-val" id="p_period"></td><td class="label-en">Period</td></tr>
+                <tr><td class="label-ar">تاريخ الانتهاء</td><td class="data-val" id="p_end"></td><td class="label-en">Expiry Date</td></tr>
+                <tr><td class="label-ar">الموقع</td><td class="data-val" id="p_loc"></td><td class="label-en">Location</td></tr>
+            </table>
 
-      <table class="work-table">
-        <thead>
-          <tr>
-            <th>Item NO</th>
-            <th width="45%">Description</th>
-            <th>Unit</th>
-            <th>Estimated Quantity</th>
-            <!-- تغيير R.O إلى صورة ريال عماني -->
-            <th>Unit Rate <img src="https://i.imgur.com/dPStuAZ.png" width="14" style="vertical-align:middle;"></th>
-            <th>Amount <img src="https://i.imgur.com/dPStuAZ.png" width="14" style="vertical-align:middle;"></th>
-          </tr>
-        </thead>
-        <tbody id="p_body"></tbody>
-        <tfoot>
-          <tr class="total-row">
-            <td colspan="5" style="text-align:right;">
-              Grand Total Amount <img src="https://i.imgur.com/dPStuAZ.png" width="14" style="vertical-align:middle;"> / المجموع الإجمالي بالريال العماني
-            </td>
-            <td id="p_total">0.000</td>
-          </tr>
-        </tfoot>
-      </table>
+            <table class="work-table">
+                <thead>
+                    <tr>
+                        <th>Item NO</th>
+                        <th width="45%">Description</th>
+                        <th>Unit</th>
+                        <th>Estimated Quantity</th>
+                        <th>Unit Rate <img src="https://i.imgur.com/dPStuAZ.png" class="currency-img" alt="RO"></th>
+                        <th>Amount <img src="https://i.imgur.com/dPStuAZ.png" class="currency-img" alt="RO"></th>
+                    </tr>
+                </thead>
+                <tbody id="p_body"></tbody>
+                <tfoot>
+                    <tr class="total-row">
+                        <td colspan="5" style="text-align:right;">Grand Total Amount (<img src="https://i.imgur.com/dPStuAZ.png" class="currency-img" alt="RO">) / المجموع الإجمالي بالريال العماني</td>
+                        <td id="p_total">0.000</td>
+                    </tr>
+                </tfoot>
+            </table>
 
-      <div class="sig-section">
-        <div class="sig-row">
-          <div>Project Engineer / Road Supervisor</div>
-          <div>Head Section of Road Maintenance</div>
+            <div class="sig-section">
+                <div class="sig-row">
+                    <div>Project Engineer / Road Supervisor</div>
+                    <div>Head Section of Road Maintenance</div>
+                </div>
+                <div class="sig-bottom">Director of Governorate Road Department</div>
+            </div>
         </div>
-        <div class="sig-bottom">Director of Governorate Road Department</div>
-      </div>
     </div>
-  </div>
 
-  <div class="page-container">
-    <h3 style="text-align:center; border-bottom: 2px solid black; padding-bottom: 10px;">المرفقات / ATTACHMENTS</h3>
-    <p style="font-weight:bold;">رقم أمر العمل: <span id="p_wo_ref"></span></p>
-    <div id="p_images_grid" class="attachment-grid"></div>
-  </div>
+    <div class="page-container">
+        <h3 style="text-align:center; border-bottom: 2px solid black; padding-bottom: 10px;">المرفقات / ATTACHMENTS</h3>
+        <p style="font-weight:bold;">رقم أمر العمل: <span id="p_wo_ref"></span></p>
+        <div id="p_images_grid" class="attachment-grid"></div>
+    </div>
 </div>
 
 <script>
-  const itemsDB = [
-    {id: "2.2.5(x)a", desc: "Removal and disposal/delivary of existing steel barrier (full system)", unit: "Lin.m", rate: 4.800},
-    {id: "13.1.7(i)", desc: "W-Beam Guard Rail, Standard Section (as Existing)", unit: "Lin.m", rate: 20.000},
-    {id: "13.1.7(ii)", desc: "W-Beam Guard Rail, transition section", unit: "Lin.m", rate: 10.000},
-    {id: "13.1.7(iii)a", desc: "W-Beam terminal section departure end", unit: "Nr", rate: 35.000},
-    {id: "13.1.7(iii)b", desc: "W-Beam Guard Rail, fish tail", unit: "Nr", rate: 20.000},
-    {id: "13.1.7(iv)", desc: "W-Beam Guard Rail Post including Foundation", unit: "Nr", rate: 30.000},
-    {id: "13.1.7(v)", desc: "Thrie Beam Guard Rail, Standard Section", unit: "Lin.m", rate: 15.000},
-    {id: "13.1.7(vi)", desc: "Thrie Beam Guard Rail, Transition Section", unit: "Lin.m", rate: 10.000},
-    {id: "13.1.7(vii)", desc: "Thrie Beam terminal section departure end", unit: "Nr", rate: 5.000},
-    {id: "13.1.7(viii)", desc: "Thrie Beam Guard Rail Post including Foundation", unit: "Nr", rate: 5.000},
-    {id: "13.1.7(ix)", desc: "Concrete Barrier, Single Face (any Type)", unit: "Lin.m", rate: 30.000},
-    {id: "13.1.7(x)", desc: "Concrete Barrier, Double Face (any Type)", unit: "Lin.m", rate: 30.000},
-    {id: "13.1.7(xi)", desc: "Concrete Barrier, Transition Section", unit: "Lin.m", rate: 10.000},
-    {id: "13.1.7(xii)a", desc: "Impact Attenuator full system", unit: "Nr", rate: 2500.000},
-    {id: "13.1.7(xii)b", desc: "Front Plate of Impact Attenuator", unit: "Nr", rate: 5.000},
-    {id: "13.1.7(xii)c", desc: "Beam of Impact Attenuator", unit: "Nr", rate: 5.000},
-    {id: "13.1.7(xii)d", desc: "Post of Impact Attenuator", unit: "Nr", rate: 5.000},
-    {id: "13.1.7(xii)e", desc: "Expandable modules/cartridges of Impact Attenuator", unit: "Nr", rate: 5.000},
-    {id: "13.1.7(xiv)a", desc: "Barrier Reflector Single Face (Guard Rail)", unit: "Nr", rate: 7.000},
-    {id: "13.1.7(xiv)b", desc: "Barrier Reflector Double Face (Guard Rail)", unit: "Nr", rate: 7.000},
-    {id: "13.1.7(xiv)c", desc: "Barrier Reflector Single Face (Concrete Barrier)", unit: "Nr", rate: 2.000},
-    {id: "13.1.13", desc: "Bolts and nuts for guard rail (any size)", unit: "Nr", rate: 0.500}
-  ];
+    const itemsDB = [
+        {id: "2.2.5(x)a", desc: "Removal and disposal/delivary of existing steel barrier (full system)", unit: "Lin.m", rate: 4.800},
+        {id: "13.1.7(i)", desc: "W-Beam Guard Rail, Standard Section (as Existing)", unit: "Lin.m", rate: 20.000},
+        {id: "13.1.7(ii)", desc: "W-Beam Guard Rail, transition section", unit: "Lin.m", rate: 10.000},
+        {id: "13.1.7(iii)a", desc: "W-Beam terminal section departure end", unit: "Nr", rate: 35.000},
+        {id: "13.1.7(iii)b", desc: "W-Beam Guard Rail, fish tail", unit: "Nr", rate: 20.000},
+        {id: "13.1.7(iv)", desc: "W-Beam Guard Rail Post including Foundation", unit: "Nr", rate: 30.000},
+        {id: "13.1.7(v)", desc: "Thrie Beam Guard Rail, Standard Section", unit: "Lin.m", rate: 15.000},
+        {id: "13.1.7(vi)", desc: "Thrie Beam Guard Rail, Transition Section", unit: "Lin.m", rate: 10.000},
+        {id: "13.1.7(vii)", desc: "Thrie Beam terminal section departure end", unit: "Nr", rate: 5.000},
+        {id: "13.1.7(viii)", desc: "Thrie Beam Guard Rail Post including Foundation", unit: "Nr", rate: 5.000},
+        {id: "13.1.7(ix)", desc: "Concrete Barrier, Single Face (any Type)", unit: "Lin.m", rate: 30.000},
+        {id: "13.1.7(x)", desc: "Concrete Barrier, Double Face (any Type)", unit: "Lin.m", rate: 30.000},
+        {id: "13.1.7(xi)", desc: "Concrete Barrier, Transition Section", unit: "Lin.m", rate: 10.000},
+        {id: "13.1.7(xii)a", desc: "Impact Attenuator full system", unit: "Nr", rate: 2500.000},
+        {id: "13.1.7(xii)b", desc: "Front Plate of Impact Attenuator", unit: "Nr", rate: 5.000},
+        {id: "13.1.7(xii)c", desc: "Beam of Impact Attenuator", unit: "Nr", rate: 5.000},
+        {id: "13.1.7(xii)d", desc: "Post of Impact Attenuator", unit: "Nr", rate: 5.000},
+        {id: "13.1.7(xii)e", desc: "Expandable modules/cartridges of Impact Attenuator", unit: "Nr", rate: 5.000},
+        {id: "13.1.7(xiv)a", desc: "Barrier Reflector Single Face (Guard Rail)", unit: "Nr", rate: 7.000},
+        {id: "13.1.7(xiv)b", desc: "Barrier Reflector Double Face (Guard Rail)", unit: "Nr", rate: 7.000},
+        {id: "13.1.7(xiv)c", desc: "Barrier Reflector Single Face (Concrete Barrier)", unit: "Nr", rate: 2.000},
+        {id: "13.1.13", desc: "Bolts and nuts for guard rail (any size)", unit: "Nr", rate: 0.500}
+    ];
 
-  function getLocation() {
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(p => {
-        document.getElementById('m_gps').value = p.coords.latitude.toFixed(5) + ", " + p.coords.longitude.toFixed(5);
-      }, () => alert("يرجى تفعيل GPS"));
-    }
-  }
-
-  function addItemRow() {
-    const container = document.getElementById('items_list');
-    const div = document.createElement('div');
-    div.className = 'field-group';
-    div.style.background = '#f9f9f9';
-    div.style.padding = '8px';
-    div.style.borderRadius = '5px';
-    let opts = itemsDB.map((it, idx) => `<option value="${idx}">${it.id} - ${it.desc}</option>`).join('');
-    div.innerHTML = `<select class="sel-item">${opts}</select>
-      <div style="display:flex; gap:5px;"><input type="number" class="sel-qty" value="1" step="0.01">
-      <button onclick="this.parentElement.parentElement.remove()" style="background:red; color:white; border:none; border-radius:5px; padding:5px 10px;">X</button></div>`;
-    container.appendChild(div);
-  }
-
-  function previewImages() {
-    const prev = document.getElementById('attachments_preview');
-    prev.innerHTML = '';
-    Array.from(document.getElementById('wo_files').files).forEach(file => {
-      const reader = new FileReader();
-      reader.onload = e => {
-        const img = document.createElement('img');
-        img.src = e.target.result;
-        img.className = 'img-thumb';
-        prev.appendChild(img);
-      };
-      reader.readAsDataURL(file);
-    });
-  }
-
-  function formatDate(dateStr) {
-    if (!dateStr) return "";
-    const [y, m, d] = dateStr.split('-');
-    return `${d}/${m}/${y}`;
-  }
-
-  function generatePrint() {
-    const woDate = document.getElementById('wo_date').value;
-    const days = parseInt(document.getElementById('wo_days').value) || 0;
-
-    document.getElementById('p_wo_no').innerText = document.getElementById('wo_no').value;
-    document.getElementById('p_wo_ref').innerText = document.getElementById('wo_no').value;
-    document.getElementById('p_date').innerText = formatDate(woDate);
-    document.getElementById('p_period').innerText = days + " Days";
-    document.getElementById('p_loc').innerText =
-      document.getElementById('m_road').value + " (" + document.getElementById('m_gps').value + ")";
-
-    if (woDate) {
-      let d = new Date(woDate);
-      d.setDate(d.getDate() + days);
-      const ey = d.getFullYear(),
-            em = String(d.getMonth() + 1).padStart(2, '0'),
-            ed = String(d.getDate()).padStart(2, '0');
-      document.getElementById('p_end').innerText = `${ed}/${em}/${ey}`;
+    function getLocation() {
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(p => {
+                document.getElementById('m_gps').value = p.coords.latitude.toFixed(5) + ", " + p.coords.longitude.toFixed(5);
+            }, () => alert("يرجى تفعيل GPS"));
+        }
     }
 
-    let html =
+    function addItemRow() {
+        const container = document.getElementById('items_list');
+        const div = document.createElement('div');
+        div.className = 'field-group';
+        div.style.background = '#f9f9f9'; div.style.padding = '8px'; div.style.borderRadius = '5px';
+        let opts = itemsDB.map((it, idx) => `<option value="${idx}">${it.id} - ${it.desc}</option>`).join('');
+        div.innerHTML = `<select class="sel-item">${opts}</select>
+            <div style="display:flex; gap:5px;"><input type="number" class="sel-qty" value="1" step="0.01">
+            <button onclick="this.parentElement.parentElement.remove()" style="background:red; color:white; border:none; border-radius:5px; padding:5px 10px;">X</button></div>`;
+        container.appendChild(div);
+    }
+
+    function previewImages() {
+        const prev = document.getElementById('attachments_preview'); prev.innerHTML = '';
+        Array.from(document.getElementById('wo_files').files).forEach(file => {
+            const reader = new FileReader();
+            reader.onload = e => {
+                const img = document.createElement('img'); img.src = e.target.result; img.className = 'img-thumb';
+                prev.appendChild(img);
+            };
+            reader.readAsDataURL(file);
+        });
+    }
+
+    function formatDate(dateStr) {
+        if(!dateStr) return "";
+        const [y, m, d] = dateStr.split('-');
+        return `${d}/${m}/${y}`;
+    }
+
+    function generatePrint() {
+        const woDate = document.getElementById('wo_date').value;
+        const days = parseInt(document.getElementById('wo_days').value) || 0;
+        
+        document.getElementById('p_wo_no').innerText = document.getElementById('wo_no').value;
+        document.getElementById('p_wo_ref').innerText = document.getElementById('wo_no').value;
+        document.getElementById('p_date').innerText = formatDate(woDate);
+        document.getElementById('p_period').innerText = days + " Days";
+        document.getElementById('p_loc').innerText = document.getElementById('m_road').value + " (" + document.getElementById('m_gps').value + ")";
+
+        if(woDate) {
+            let d = new Date(woDate); d.setDate(d.getDate() + days);
+            const ey = d.getFullYear(), em = String(d.getMonth()+1).padStart(2,'0'), ed = String(d.getDate()).padStart(2,'0');
+            document.getElementById('p_end').innerText = `${ed}/${em}/${ey}`;
+        }
+
+        let html = ""; let total = 0;
+        document.querySelectorAll('.sel-item').forEach((sel, i) => {
+            const item = itemsDB[sel.value];
+            const qty = parseFloat(document.querySelectorAll('.sel-qty')[i].value) || 0;
+            const amt = qty * item.rate; total += amt;
+            html += `<tr><td>${item.id}</td><td style="text-align:left">${item.desc}</td><td>${item.unit}</td><td>${qty}</td><td>${item.rate.toFixed(3)}</td><td>${amt.toFixed(3)}</td></tr>`;
+        });
+        document.getElementById('p_body').innerHTML = html;
+        document.getElementById('p_total').innerText = total.toFixed(3);
+
+        const grid = document.getElementById('p_images_grid'); grid.innerHTML = '';
+        Array.from(document.getElementById('wo_files').files).forEach(file => {
+            const reader = new FileReader();
+            reader.onload = e => { const img = document.createElement('img'); img.src = e.target.result; grid.appendChild(img); };
+            reader.readAsDataURL(file);
+        });
+
+        setTimeout(() => { window.print(); }, 700);
+    }
+
+    function showStep(n) {
+        document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
+        document.getElementById('step' + n).classList.add('active');
+    }
+
+    window.onload = addItemRow;
+</script>
+</body>
+</html>

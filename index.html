@@ -18,7 +18,7 @@
         #attachments_preview { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 10px; }
         .img-thumb { width: 80px; height: 80px; object-fit: cover; border: 1px solid #ddd; border-radius: 5px; }
         
-        /* تنسيق صورة العملة لتناسب النص */
+        /* تنسيق صورة العملة لتتناسب مع حجم النص */
         .currency-img {
             height: 1.1em;
             vertical-align: middle;
@@ -148,8 +148,9 @@
 </div>
 
 <script>
+    // رابط صورة الريال العماني
     const imgRO = '<img src="https://i.imgur.com/dPStuAZ.png" class="currency-img">';
-    
+
     const itemsDB = [
         {id: "2.2.5(x)a", desc: "Removal and disposal/delivary of existing steel barrier (full system)", unit: "Lin.m", rate: 4.800},
         {id: "13.1.7(i)", desc: "W-Beam Guard Rail, Standard Section (as Existing)", unit: "Lin.m", rate: 20.000},
@@ -234,8 +235,16 @@
             const item = itemsDB[sel.value];
             const qty = parseFloat(document.querySelectorAll('.sel-qty')[i].value) || 0;
             const amt = qty * item.rate; total += amt;
-            // هنا التعديل الجذري: نستخدم متغير imgRO بدلاً من النص
-            html += `<tr><td>${item.id}</td><td style="text-align:left">${item.desc}</td><td>${item.unit}</td><td>${qty}</td><td>${item.rate.toFixed(3)}</td><td>${amt.toFixed(3)}</td></tr>`;
+            
+            // تم التعديل هنا لضمان عدم ظهور نص R.O في الجدول
+            html += `<tr>
+                        <td>${item.id}</td>
+                        <td style="text-align:left">${item.desc}</td>
+                        <td>${item.unit}</td>
+                        <td>${qty}</td>
+                        <td>${item.rate.toFixed(3)}</td>
+                        <td>${amt.toFixed(3)}</td>
+                    </tr>`;
         });
         document.getElementById('p_body').innerHTML = html;
         document.getElementById('p_total').innerText = total.toFixed(3);

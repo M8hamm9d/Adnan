@@ -18,51 +18,45 @@
         #attachments_preview { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 10px; }
         .img-thumb { width: 80px; height: 80px; object-fit: cover; border: 1px solid #ddd; border-radius: 5px; }
         
-        /* تنسيق صورة العملة لتتناسب مع النص */
+        /* تنسيق صورة العملة لتناسب النص */
         .currency-img {
-            height: 1.2em;
+            height: 1.1em;
             vertical-align: middle;
             display: inline-block;
+            margin: 0 2px;
         }
 
-        /* إعدادات الطباعة الاحترافية */
         @media print {
             .no-print { display: none !important; }
             #printArea { display: block !important; }
             body { background: white; margin: 0; padding: 0; }
-            @page { size: A4; margin: 0; } /* إزالة الهوامش التلقائية للمتصفح (الوقت والروابط) */
-            
+            @page { size: A4; margin: 0; }
             .page-container {
                 width: 210mm;
                 min-height: 297mm;
                 padding: 15mm;
                 margin: auto;
                 box-sizing: border-box;
-                page-break-after: always; /* فصل الصفحات */
+                page-break-after: always;
                 position: relative;
-                overflow: hidden;
             }
         }
 
         #printArea { display: none; background: white; color: black; }
-        .print-header-space { margin-top: 130px; } /* مسافة 4 أسطر تقريباً */
+        .print-header-space { margin-top: 130px; }
         .header-title { text-align: center; font-weight: bold; font-size: 15px; margin-bottom: 25px; line-height: 1.6; }
-        
         .info-table { width: 100%; border-collapse: collapse; margin-bottom: 20px; table-layout: fixed; }
         .info-table td { border: 1px solid black; padding: 8px; font-size: 12px; text-align: center; }
-        .label-ar { width: 110px; font-weight: bold; background: #f2f2f2; text-align: right; direction: rtl; }
+        .label-ar { width: 110px; font-weight: bold; background: #f2f2f2; text-align: right; }
         .label-en { width: 110px; font-weight: bold; background: #f2f2f2; text-align: left; direction: ltr; }
         .data-val { font-weight: bold; font-size: 13px; }
-
         .work-table { width: 100%; border-collapse: collapse; direction: ltr; margin-top: 10px; }
         .work-table th, .work-table td { border: 1px solid black; padding: 6px; text-align: center; font-size: 11px; }
         .work-table th { background: #f2f2f2; }
         .total-row { font-weight: bold; background: #f9f9f9; }
-
         .sig-section { margin-top: 40px; }
         .sig-row { display: flex; justify-content: space-between; padding: 0 40px; font-weight: bold; font-size: 13px; }
         .sig-bottom { text-align: center; margin-top: 50px; font-weight: bold; font-size: 14px; }
-
         .attachment-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 20px; }
         .attachment-grid img { width: 100%; border: 1px solid #000; max-height: 350px; object-fit: contain; }
     </style>
@@ -123,14 +117,14 @@
                         <th width="45%">Description</th>
                         <th>Unit</th>
                         <th>Estimated Quantity</th>
-                        <th>Unit Rate <img src="https://i.imgur.com/dPStuAZ.png" class="currency-img" alt="RO"></th>
-                        <th>Amount <img src="https://i.imgur.com/dPStuAZ.png" class="currency-img" alt="RO"></th>
+                        <th>Unit Rate <img src="https://i.imgur.com/dPStuAZ.png" class="currency-img"></th>
+                        <th>Amount <img src="https://i.imgur.com/dPStuAZ.png" class="currency-img"></th>
                     </tr>
                 </thead>
                 <tbody id="p_body"></tbody>
                 <tfoot>
                     <tr class="total-row">
-                        <td colspan="5" style="text-align:right;">Grand Total Amount (<img src="https://i.imgur.com/dPStuAZ.png" class="currency-img" alt="RO">) / المجموع الإجمالي بالريال العماني</td>
+                        <td colspan="5" style="text-align:right;">Grand Total Amount (<img src="https://i.imgur.com/dPStuAZ.png" class="currency-img">) / المجموع الإجمالي بالريال العماني</td>
                         <td id="p_total">0.000</td>
                     </tr>
                 </tfoot>
@@ -154,6 +148,8 @@
 </div>
 
 <script>
+    const imgRO = '<img src="https://i.imgur.com/dPStuAZ.png" class="currency-img">';
+    
     const itemsDB = [
         {id: "2.2.5(x)a", desc: "Removal and disposal/delivary of existing steel barrier (full system)", unit: "Lin.m", rate: 4.800},
         {id: "13.1.7(i)", desc: "W-Beam Guard Rail, Standard Section (as Existing)", unit: "Lin.m", rate: 20.000},
@@ -238,6 +234,7 @@
             const item = itemsDB[sel.value];
             const qty = parseFloat(document.querySelectorAll('.sel-qty')[i].value) || 0;
             const amt = qty * item.rate; total += amt;
+            // هنا التعديل الجذري: نستخدم متغير imgRO بدلاً من النص
             html += `<tr><td>${item.id}</td><td style="text-align:left">${item.desc}</td><td>${item.unit}</td><td>${qty}</td><td>${item.rate.toFixed(3)}</td><td>${amt.toFixed(3)}</td></tr>`;
         });
         document.getElementById('p_body').innerHTML = html;
